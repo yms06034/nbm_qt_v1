@@ -28,8 +28,8 @@ class MainWindow(QMainWindow):
         window_ico = resource_path('favicon.ico')
         self.setWindowIcon(QIcon(window_ico))
 
-        main_ui.id.setText("itthere2")
-        main_ui.pwd.setText("naver1!2@L")
+        # main_ui.id.setText("itthere2")
+        # main_ui.pwd.setText("naver1!2@L")
 
         main_ui.btn_start.clicked.connect(self.btn_startClicked)
 
