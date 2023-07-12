@@ -1,1 +1,0 @@
-$('.hovertext').attr("data-hover", "네이버 카페의 있는 URL 중\n\n 'https://cafe.naver.com/wecando7' \n wecando7만  적어주세요");

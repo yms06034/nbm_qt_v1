@@ -353,7 +353,7 @@ def naverCafeCrawling(NAVER_ID, NAVER_PW, CAFENAME, BORADTITLE, NICKNAME, keywor
                     register_btn.click()
 
                     cmt_urls.append(browser.current_url)
-                    time.sleep(2)
+                    time.sleep(5)
                     
             else:
                 # Write Comment
@@ -367,7 +367,7 @@ def naverCafeCrawling(NAVER_ID, NAVER_PW, CAFENAME, BORADTITLE, NICKNAME, keywor
                 register_btn.click()
 
                 cmt_urls.append(browser.current_url)
-                time.sleep(2)
+                time.sleep(5)
 
         except NoSuchElementException:
             pass
@@ -381,6 +381,6 @@ def naverCafeCrawling(NAVER_ID, NAVER_PW, CAFENAME, BORADTITLE, NICKNAME, keywor
         pass
     else:
         df = pd.DataFrame({'댓글 URL' : cmt_urls})
-        df.to_excel(f'{CAFENAME}_{dt}_1.xlsx', index=False)
+        df.to_excel(f'{CAFENAME}_{dt}.xlsx', index=False)
     
     return cmt_urls
