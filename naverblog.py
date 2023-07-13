@@ -4,7 +4,7 @@ from PyQt5.QtWidgets import *
 from PyQt5 import uic
 from PyQt5.QtGui import QIcon
 from ui import Ui_MainWindow
-from main import start_function
+import main as blog
 
 
 def resource_path(relative_path):
@@ -24,10 +24,6 @@ class MainWindow(QMainWindow):
 
         window_ico = resource_path('favicon.ico')
         self.setWindowIcon(QIcon(window_ico))
-
-        # main_ui.id.setText("itthere2")
-        # main_ui.pwd.setText("naver1!2@L")
-
 
         main_ui.keyword.returnPressed.connect(self.addKeyword)
 
@@ -49,8 +45,7 @@ class MainWindow(QMainWindow):
             main_ui.keyword.clear()
         return
     def btn_addClicked(self):
-        if main_ui.keyword.text().replace(" ", ""):
-            self.addKeyword()
+        self.addKeyword()
         return
 
     def btn_delClicked(self):
@@ -66,7 +61,7 @@ class MainWindow(QMainWindow):
 
         if main_ui.keywords.count() > 0:
             for i in range(main_ui.keywords.count()):
-                keywords.append(main_ui.keywords.item(i))
+                keywords.append(main_ui.keywords.item(i).text())
         else: keywords = None
 
         if main_ui.textEdit.toPlainText():
@@ -75,7 +70,11 @@ class MainWindow(QMainWindow):
             text = None
 
         if all([id, pwd, keywords, text]):
-            start_function(id, pwd, keywords, text)
+            cmt_write_urls = blog.start_function(id, pwd, keywords, text)
+
+            for i in cmt_write_urls:
+                print(i)
+            
             return
         else:
             QMessageBox.information(self,NAME,'빈칸을 모두 채워주세요')
