@@ -18,6 +18,8 @@ import numpy as np
 import time
 import requests
 import pyperclip
+import os
+
 
 def naverCafeCrawling(NAVER_ID, NAVER_PW, CAFENAME, BORADTITLE, NICKNAME, keyword, COMMENTS):
     def css_finds(css_selector):
@@ -86,6 +88,9 @@ def naverCafeCrawling(NAVER_ID, NAVER_PW, CAFENAME, BORADTITLE, NICKNAME, keywor
     # def 2
     browser.get(f"https://cafe.naver.com/{CAFENAME}")
     time.sleep(2)
+    
+    cafe_r_name = css_find('h2.cafe_name').text
+    print(cafe_r_name)
 
     soup = BS(browser.page_source, "html.parser")
     soup = soup.find_all(class_='cafe-menu-list')
@@ -114,7 +119,7 @@ def naverCafeCrawling(NAVER_ID, NAVER_PW, CAFENAME, BORADTITLE, NICKNAME, keywor
 
     final_hrefs = []
 
-    page_num = [1,2,3,4,5,6] # 게시글 최대 100개만 작성
+    page_num = [1,2] # 게시글 최대 100개만 작성
     prev_nums = find_className('prev-next').text
     prev_nums = prev_nums.split('\n')[1].split(' ')
 
@@ -321,28 +326,56 @@ def naverCafeCrawling(NAVER_ID, NAVER_PW, CAFENAME, BORADTITLE, NICKNAME, keywor
 
     cmtnicks = []
     cmt_urls = []
+    try:
+        for p_href in final_hrefs:
+            browser.get(p_href)
+            time.sleep(1)
+            browser.switch_to.frame("cafe_main")
+            time.sleep(1)
+            cmtnicks.clear()
 
-    for p_href in final_hrefs:
-        browser.get(p_href)
-        time.sleep(1)
-        browser.switch_to.frame("cafe_main")
-        time.sleep(1)
-        cmtnicks.clear()
+            try:
+        #         nicksname = browser.find_element(By.CLASS_NAME, 'comment_inbox_name').text
+                nickname = NICKNAME
+                cmtNicks = browser.find_elements(By.CLASS_NAME, 'comment_nickname')
 
-        try:
-    #         nicksname = browser.find_element(By.CLASS_NAME, 'comment_inbox_name').text
-            nickname = NICKNAME
-            cmtNicks = browser.find_elements(By.CLASS_NAME, 'comment_nickname')
+                if cmtNicks:
+                    for cmtNick in cmtNicks:
+                        cmtnick = cmtNick.text
+                        cmtnicks.append(cmtnick)
+                        print('nickname :', cmtnicks)
+                        
+                    if nickname in cmtnicks:
+                        continue
+                    else:
+                        time.sleep(1)
+                        text_area = browser.find_element(By.CLASS_NAME, 'comment_inbox_text')
+                        text_area.click()
 
-            if cmtNicks:
-                for cmtNick in cmtNicks:
-                    cmtnick = cmtNick.text
-                    cmtnicks.append(cmtnick)
-                    print('nickname :', cmtnicks)
-                    
-                if nickname in cmtnicks:
-                    continue
+                        pyperclip.copy(COMMENTS) 
+                        text_area.send_keys(Keys.CONTROL, "v")
+                        register_btn = browser.find_element(By.CLASS_NAME, 'btn_register')
+                        register_btn.click()
+
+                        cmt_urls.append(browser.current_url)
+                        time.sleep(1)
+                        
+                        screenshot_folder = 'screenshot/'
+                        start_num = 1
+                        
+                        if not os.path.exists(screenshot_folder):
+                            os.makedirs(screenshot_folder)
+
+                        esisting_files = os.listdir(screenshot_folder)
+                        screenshot_num = start_num + len(esisting_files)
+
+                        screenshot_path = f'{screenshot_folder}screenshot_{screenshot_num}.png'
+                        browser.save_screenshot(screenshot_path)
+                                            
+                        time.sleep(5)
+                        
                 else:
+                    # Write Comment
                     time.sleep(1)
                     text_area = browser.find_element(By.CLASS_NAME, 'comment_inbox_text')
                     text_area.click()
@@ -353,34 +386,42 @@ def naverCafeCrawling(NAVER_ID, NAVER_PW, CAFENAME, BORADTITLE, NICKNAME, keywor
                     register_btn.click()
 
                     cmt_urls.append(browser.current_url)
-                    time.sleep(5)
+                    time.sleep(1)
+                        
+                    screenshot_folder = 'screenshot/'
+                    start_num = 1
                     
-            else:
-                # Write Comment
-                time.sleep(1)
-                text_area = browser.find_element(By.CLASS_NAME, 'comment_inbox_text')
-                text_area.click()
+                    if not os.path.exists(screenshot_folder):
+                        os.makedirs(screenshot_folder)
 
-                pyperclip.copy(COMMENTS) 
-                text_area.send_keys(Keys.CONTROL, "v")
-                register_btn = browser.find_element(By.CLASS_NAME, 'btn_register')
-                register_btn.click()
+                    esisting_files = os.listdir(screenshot_folder)
+                    screenshot_num = start_num + len(esisting_files)
 
-                cmt_urls.append(browser.current_url)
-                time.sleep(5)
+                    screenshot_path = f'{screenshot_folder}screenshot_{screenshot_num}.png'
+                    browser.save_screenshot(screenshot_path)
+                    
+                    time.sleep(5)
 
-        except NoSuchElementException:
-            pass
+            except:
+                pass
+            
+
+        time.sleep(3)
+        browser.close()
         
-
-    time.sleep(3)
-    browser.close()
-    
-    dt = datetime.now().strftime("%Y-%m-%d_%H%M%S")
-    if not cmt_urls:
-        pass
-    else:
-        df = pd.DataFrame({'댓글 URL' : cmt_urls})
-        df.to_excel(f'{CAFENAME}_{dt}.xlsx', index=False)
+        dt = datetime.now().strftime("%Y-%m-%d_%H%M%S")
+        if not cmt_urls:
+            pass
+        else:
+            df = pd.DataFrame({'댓글 URL' : cmt_urls})
+            df.to_excel(f'{cafe_r_name}_{dt}.xlsx', index=False)
+            
+    except:
+        dt = datetime.now().strftime("%Y-%m-%d_%H%M%S")
+        if not cmt_urls:
+            pass
+        else:
+            df = pd.DataFrame({'댓글 URL' : cmt_urls})
+            df.to_excel(f'{cafe_r_name}_{dt}.xlsx', index=False)
     
     return cmt_urls
