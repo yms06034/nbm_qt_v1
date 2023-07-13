@@ -1,22 +1,15 @@
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
-from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
 from selenium.common.exceptions import NoSuchElementException
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
-
-from webdriver_manager.chrome import ChromeDriverManager
 
 from bs4 import BeautifulSoup as BS
 from urllib.parse import urlparse, parse_qs
 from datetime import datetime
 
 import pandas as pd
-import numpy as np
 import time
-import requests
 import pyperclip
 import os
 
@@ -27,15 +20,6 @@ def naverCafeCrawling(NAVER_ID, NAVER_PW, CAFENAME, BORADTITLE, NICKNAME, keywor
 
     def css_find(css_selector):
         return browser.find_element(By.CSS_SELECTOR, css_selector)
-
-    def find(wait, css_selector):
-        return wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, css_selector)))
-
-    def finds_xpath(xpath):
-        return browser.find_elements(By.XPATH, xpath)
-
-    def find_xpath(xpath):
-        return browser.find_element(By.XPATH, xpath)
 
     def find_id(id_x):
         return browser.find_element(By.ID, id_x)
@@ -131,9 +115,6 @@ def naverCafeCrawling(NAVER_ID, NAVER_PW, CAFENAME, BORADTITLE, NICKNAME, keywor
 
             soup = BS(browser.page_source, "html.parser")
             soup = soup.find_all(class_='article-board m-tcol-c')[1]
-
-            datas = soup.find_all(class_='td_article')
-            dates = soup.find_all(class_='td_date')
 
             a_hrefs = soup.find_all("a")
 
@@ -233,9 +214,6 @@ def naverCafeCrawling(NAVER_ID, NAVER_PW, CAFENAME, BORADTITLE, NICKNAME, keywor
                 soup = BS(browser.page_source, "html.parser")
                 soup = soup.find_all(class_='article-board m-tcol-c')[1]
 
-                datas = soup.find_all(class_='td_article')
-                dates = soup.find_all(class_='td_date')
-
                 a_hrefs = soup.find_all("a")
 
                 # def 3
@@ -279,9 +257,6 @@ def naverCafeCrawling(NAVER_ID, NAVER_PW, CAFENAME, BORADTITLE, NICKNAME, keywor
         else:
             soup = BS(browser.page_source, "html.parser")
             soup = soup.find_all(class_='article-board m-tcol-c')[1]
-
-            datas = soup.find_all(class_='td_article')
-            dates = soup.find_all(class_='td_date')
 
             a_hrefs = soup.find_all("a")
 
@@ -331,7 +306,6 @@ def naverCafeCrawling(NAVER_ID, NAVER_PW, CAFENAME, BORADTITLE, NICKNAME, keywor
             browser.get(p_href)
             time.sleep(1)
             browser.switch_to.frame("cafe_main")
-            time.sleep(1)
             cmtnicks.clear()
 
             try:
@@ -358,7 +332,7 @@ def naverCafeCrawling(NAVER_ID, NAVER_PW, CAFENAME, BORADTITLE, NICKNAME, keywor
                         register_btn.click()
 
                         cmt_urls.append(browser.current_url)
-                        time.sleep(1)
+                        time.sleep(.5)
                         
                         screenshot_folder = 'screenshot/'
                         start_num = 1
@@ -372,7 +346,7 @@ def naverCafeCrawling(NAVER_ID, NAVER_PW, CAFENAME, BORADTITLE, NICKNAME, keywor
                         screenshot_path = f'{screenshot_folder}screenshot_{screenshot_num}.png'
                         browser.save_screenshot(screenshot_path)
                                             
-                        time.sleep(5)
+                        time.sleep(2)
                         
                 else:
                     # Write Comment
@@ -386,7 +360,7 @@ def naverCafeCrawling(NAVER_ID, NAVER_PW, CAFENAME, BORADTITLE, NICKNAME, keywor
                     register_btn.click()
 
                     cmt_urls.append(browser.current_url)
-                    time.sleep(1)
+                    time.sleep(.5)
                         
                     screenshot_folder = 'screenshot/'
                     start_num = 1
@@ -400,7 +374,7 @@ def naverCafeCrawling(NAVER_ID, NAVER_PW, CAFENAME, BORADTITLE, NICKNAME, keywor
                     screenshot_path = f'{screenshot_folder}screenshot_{screenshot_num}.png'
                     browser.save_screenshot(screenshot_path)
                     
-                    time.sleep(5)
+                    time.sleep(2)
 
             except:
                 pass
