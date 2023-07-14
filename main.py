@@ -223,6 +223,19 @@ def writeCmt(browser, KW, cmt):
                         commit_btn.click()
                         print(browser.current_url)
                         cmt_write_urls.append(browser.current_url)
+                        
+                        screenshot_folder = 'screenshot/'
+                        start_num = 1
+                        
+                        if not os.path.exists(screenshot_folder):
+                            os.makedirs(screenshot_folder)
+                            
+                        esisting_files = os.listdir(screenshot_folder)
+                        screenshot_num = start_num + len(esisting_files)
+                        
+                        screenshot_path = f'{screenshot_folder}screenshot_{screenshot_num}.png'
+                        browser.save_screenshot(screenshot_path)
+                        
                         time.sleep(3)
 
                 except :
