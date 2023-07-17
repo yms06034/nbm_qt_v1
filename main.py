@@ -224,6 +224,8 @@ def writeCmt(browser, KW, cmt):
                         print(browser.current_url)
                         cmt_write_urls.append(browser.current_url)
                         
+                        time.sleep(2)
+                        
                         screenshot_folder = 'screenshot/'
                         start_num = 1
                         
@@ -236,7 +238,7 @@ def writeCmt(browser, KW, cmt):
                         screenshot_path = f'{screenshot_folder}screenshot_{screenshot_num}.png'
                         browser.save_screenshot(screenshot_path)
                         
-                        time.sleep(3)
+                        time.sleep(2)
 
                 except :
                     error_urls.append(browser.current_url)
